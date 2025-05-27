@@ -23,12 +23,14 @@ const moves = {
     slice: (cubie) => cubie.position[0] === 2,
     rotatePositions: ([x, y, z]) => [x, 2 - z, y],
     axisName: 'x',
+    clockwise: true,
   },
   L: {
-  axis: new THREE.Vector3(-1, 0, 0), // ⬅ reversed axis
-  slice: (cubie) => cubie.position[0] === 0,
-  rotatePositions: ([x, y, z]) => [x, 2 - z, y], // ⬅ same as R
-  axisName: 'x',
+    axis: new THREE.Vector3(-1, 0, 0),
+    slice: (cubie) => cubie.position[0] === 0,
+    rotatePositions: ([x, y, z]) => [x, 2 - z, y],
+    axisName: 'x',
+    clockwise: false,
   },
   U: {
     axis: new THREE.Vector3(0, 1, 0),
@@ -57,7 +59,14 @@ const moves = {
 };
 
 const rotateFaceColors = (faces, axis, clockwise = true) => {
-  const { top, bottom, front, back, left, right } = faces;
+  const {
+    top = 'black',
+    bottom = 'black',
+    front = 'black',
+    back = 'black',
+    left = 'black',
+    right = 'black',
+  } = faces;
 
   if (axis === 'x') {
     return clockwise
@@ -178,10 +187,11 @@ const Cube = forwardRef((props, ref) => {
           if (currentMove.current.slice(cubie)) {
             const newPos = currentMove.current.rotatePositions(cubie.position);
             const newFaces = rotateFaceColors(
-  cubie.faces,
-  currentMove.current.axisName,
-  true // always clockwise
-);
+              cubie.faces,
+              currentMove.current.axisName,
+              currentMove.current.clockwise
+            );
+
 
 
             return { position: newPos, faces: newFaces };
